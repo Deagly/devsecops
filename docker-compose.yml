@@ -1,0 +1,27 @@
+version: "3.5"
+services:
+  nginx-server:
+    restart: always
+    build:
+      context: "nginx-server"
+      dockerfile: "Dockerfile"
+    volumes:
+    #- ./nginx-server/nginx.conf:/etc/nginx/nginx.conf
+    - ./web/static:/app/static
+    networks:
+      - bridge
+
+  gunicorn-django:
+    restart: always
+    build:
+      context: "./web"
+      dockerfile: "Dockerfile"
+    volumes:
+      - ./web:/app
+      - ./web/static:/app/static
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "web.wsgi:application"]
+    networks:
+      - bridge
+
+networks:
+  bridge:
